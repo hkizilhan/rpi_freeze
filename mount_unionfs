@@ -1,0 +1,47 @@
+#!/bin/sh
+
+[ -z "$1" ] && exit 1 || DIR=$1
+ROOT_MOUNT=$(grep -v "^#" /etc/fstab | awk '$2=="/" {print substr($4,1,2)}')
+
+if [ "$ROOT_MOUNT" != "ro" ]; then
+# READ WRITE FS, MOUNT ORIGINALS
+    /bin/mount --bind ${DIR}_org ${DIR}
+else
+# READ ONLY ( FREEZE ) STATE
+# MOUNT UNIONFS
+    # $3 -> script parameter - mount option for size, ex: size=5M
+    /bin/mount -t tmpfs ramdisk -o $3 ${DIR}_rw   
+    /usr/bin/unionfs-fuse -o cow,allow_other,suid,dev,nonempty ${DIR}_rw=RW:${DIR}_org=RO ${DIR}
+fi
+
+# Hakan Ver: 0.2
+
+# http://blog.pi3g.com/2014/04/make-raspbian-system-read-only/
+# 
+# Usage: 
+
+# sudo apt-get install unionfs-fuse
+# copy this scrip to /usr/local/bin/mount_unionfs
+# make it executable     sudo chmod +x /usr/local/bin/mount_unionfs
+# copy /dir to /dir_org with hardlinks: sudo cp -al /dir /dir_org 
+# make mount dir: sudo /dir_rw  
+# update fstab as follows
+
+# proc            /proc           proc    defaults          0       0
+# /dev/mmcblk0p1  /boot           vfat    ro                0       2
+# /dev/mmcblk0p2  /               ext4    ro,noatime        0       1
+# mount_unionfs   /etc            fuse    defaults,size=5M  0       0
+# mount_unionfs   /var            fuse    defaults,size=20M 0       0
+# none            /tmp            tmpfs   defaults          0       0
+
+# IMPORTANT:
+# 1) switch read write: chance fstab entry for root to "rw"
+#    sudo mount -o remount,rw /
+#    update "/etc_org/fstab" because "/etc" union mounted!
+#    when rebooted, script disabled and "dir_org" bind with "dir"
+#    fstab "/" line must start with "ro" or "rw"
+#
+# 2) size parameter control tmpfs size.
+#
+# 3) 
+

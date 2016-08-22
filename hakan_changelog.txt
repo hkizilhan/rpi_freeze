@@ -1,0 +1,35 @@
+update
+	** sudo apt-get update; sudo apt-get upgrade
+
+install synaptic
+	** sudo apt-get install synaptic
+
+install xfce4
+	** sudo apt-get install xfce4 xfce4-goodies
+
+set xfce4 default session
+	** sudo update-alternatives --config x-session-manager
+
+install turkish task with synaptic
+
+set timezone abd locale
+	** sudo raspi-config
+
+set xfce4 settings
+
+clean up unused programs - development etc
+
+add programs pdf, win themes, 
+
+set firefox cache to 25 MB
+
+add meb certificate
+
+
+READONLY FILESYSTEM
+	remove logrotate, rsyslog, dphys-swapfile, 
+	install busybox-syslogd
+	
+
+reset log files, set all files to zero length
+	** sudo find /var/log/ -type f -exec cp /dev/null {} \;
