@@ -35,7 +35,7 @@ fi
 # none            /tmp            tmpfs   defaults          0       0
 
 # IMPORTANT:
-# 1) switch read write: chance fstab entry for root to "rw"
+# 1) switch read write: change fstab entry for root to "rw"
 #    sudo mount -o remount,rw /
 #    update "/etc_org/fstab" because "/etc" union mounted!
 #    when rebooted, script disabled and "dir_org" bind with "dir"
